@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #elif defined(__APPLE__)
 	#include <unistd.h>
 	#include <mach-o/dyld.h>
+	#include <mach/thread_act.h>
 #elif defined(__FreeBSD__)
 	#include <unistd.h>
 	#include <sys/types.h>
@@ -337,16 +338,22 @@ void initializePaths()
 	*/
 	#elif defined(__APPLE__)
 
-	//https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/dyld.3.html
-	//TODO: Test this code
-	char buf[BUFSIZ];
-	uint32_t len = sizeof(buf);
-	assert(_NSGetExecutablePath(buf, &len) != -1);
+	{
+		char path_buf[BUFSIZ], abspath_buf[BUFSIZ];
+		uint32_t len = sizeof(path_buf);
+		if (_NSGetExecutablePath(path_buf, &len) == -1) {
+			assert(false);
+			exit(-1);
+		}
+		if (realpath(path_buf, abspath_buf) == NULL) {
+			assert(false);
+			exit(-1);
+		}
+		pathRemoveFile(abspath_buf, '/');
 
-	pathRemoveFile(buf, '/');
-
-	path_share = std::string(buf) + "/..";
-	path_user = std::string(buf) + "/..";
+		path_share = std::string(abspath_buf) + "/..";
+		path_user = std::string(abspath_buf) + "/..";
+	}
 
 	/*
 		FreeBSD

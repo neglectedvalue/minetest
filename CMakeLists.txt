@@ -155,7 +155,7 @@ install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/mapformat.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
 	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
 	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
 	install(FILES "misc/minetest-icon.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
